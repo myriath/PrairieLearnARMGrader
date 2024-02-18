@@ -125,7 +125,7 @@ class ARMGrader:
             o_file = pathlib.Path(s_file).with_suffix(".o")
             o_files.append(o_file)
             out += self.run_command(
-                [self.assembler, "-save-temps", "-c", s_file, "-o", o_file],
+                [self.assembler, "-c", s_file, "-o", o_file],
                 sandboxed=False,
             )
             #if os.path.isfile(o_file):
