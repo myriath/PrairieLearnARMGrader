@@ -1,1 +1,4 @@
-# empty for now....
+matplotlib==3.8.2
+numpy==1.26.3
+sympy==1.12
+lxml==5.1.0
