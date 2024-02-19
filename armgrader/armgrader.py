@@ -155,7 +155,6 @@ class ARMGrader:
         add_warning_result_msg=True,
         ungradable_if_failed=True
     ):
-        # The student C files must be the last so its functions can be overwritten
         out = self.run_command(
             [self.linker]
             + o_files
@@ -211,12 +210,48 @@ class ARMGrader:
         if change_parent and parent and not os.path.samefile(file, parent):
             self.change_mode(parent, "711")
 
+    def test_qemu(
+        self,
+        command,
+        input=None,
+        exp_output=None,
+        must_match_all_outputs=False,  # True, False or 'partial'
+        reject_output=None,
+        field=None,
+        ignore_case=True,
+        timeout=1,
+        size_limit=10240,
+        ignore_consec_spaces=True,
+        args=None,
+        name=None,
+        msg=None,
+        max_points=1,
+        highlight_matches=False, 
+    ):
+        return self.test_run(
+            "qemu-arm",
+            input=input,
+            exp_output=exp_output,
+            must_match_all_outputs=must_match_all_outputs,
+            reject_output=reject_output,
+            field=field,
+            ignore_case=ignore_case,
+            timeout=timeout,
+            size_limit=size_limit,
+            ignore_consec_spaces=ignore_consec_spaces,
+            args=[command] if args is None else [command] + args,
+            name=name,
+            msg=msg,
+            max_points=max_points,
+            highlight_matches=highlight_matches
+        )
+
     def test_run(
         self,
         command,
         input=None,
         exp_output=None,
-        must_match_all_outputs=False,
+        must_match_all_outputs=False,  # True, False or 'partial'
         reject_output=None,
         field=None,
         ignore_case=True,
@@ -322,20 +357,28 @@ class ARMGrader:
         elif msg is None:
             msg = ""
 
-        points = True
+        points = max_points
         if timeout and "TIMEOUT" in outcmp:
-            points = False
+            points = 0
         elif size_limit and len(outcmp) > size_limit:
             out = out[0:size_limit] + "\nTRUNCATED: Output too long."
-            points = False
+            points = 0
+        elif any(r.search(outcmp) is not None for _, r in reject_output):
+            points = 0
+        elif must_match_all_outputs == "partial":
+            points = (
+                max_points
+                * sum(1 if r.search(outcmp) is not None else 0 for _, r in exp_output)
+                / len(exp_output)
+            )
         elif not (all if must_match_all_outputs else any)(
             r.search(outcmp) is not None for _, r in exp_output
-        ) or any(r.search(outcmp) is not None for _, r in reject_output):
-            points = False
+        ):
+            points = 0
 
         return self.add_test_result(
             name,
-            points=max_points if points else 0,
+            points=points,
             msg=msg,
             output=out,
             max_points=max_points,
@@ -420,17 +463,6 @@ class ARMGrader:
         self.path = "/armgrader:" + os.environ["PATH"]
 
         self.run_command("chmod -R 700 /grade", sandboxed=False)
-
-        # Create a fake "pause" command so students with 'system("PAUSE")' don't get an error
-        # with open("/armgrader/PAUSE", "w") as f:
-        #     f.write("#! /bin/sh\n")
-        # self.change_mode("/armgrader/PAUSE", "755")
-        # self.run_command(
-        #     ["ln", "-s", "/armgrader/PAUSE", "/armgrader/pause"], sandboxed=False
-        # )
-        # self.run_command(
-        #     ["ln", "-s", "/armgrader/PAUSE", "/armgrader/Pause"], sandboxed=False
-        # )
 
         try:
             self.tests()
