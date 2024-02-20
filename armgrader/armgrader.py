@@ -210,6 +210,17 @@ class ARMGrader:
         if change_parent and parent and not os.path.samefile(file, parent):
             self.change_mode(parent, "711")
 
+    def dump_registers(
+        self,
+        executable,
+        port=1000,
+        output_filename='run.txt',
+    ):
+        self.run_command(f"touch {output_filename} && chmod 777 {output_filename}", sandboxed=False)
+        self.run_command(
+            f"qemu-arm -g {port} {executable} & gdb-multiarch {executable} -ex 'target remote localhost:{port}' -ex 'b exit' -ex 'c' -ex 'info reg' -ex 'c' -ex 'exit' > {output_filename}",
+        )
+
     def test_qemu(
         self,
         command,

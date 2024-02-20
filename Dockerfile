@@ -5,7 +5,7 @@ LABEL maintainer="wmhudson@iastate.edu"
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update
-RUN apt-get install -y python3.10 python3-pip make qemu-user gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg
+RUN apt-get install -y python3.10 python3-pip make qemu-user qemu-system-arm gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg gdb-multiarch
 
 RUN ln -sf /usr/bin/python3.10 /usr/bin/python3
 
@@ -22,5 +22,3 @@ RUN groupadd sbuser
 RUN useradd -g sbuser sbuser
 
 COPY armgrader /armgrader
-
-
