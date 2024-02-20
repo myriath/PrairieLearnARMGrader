@@ -49,10 +49,10 @@ rand:
     push {r1}  // make room for read
     mov r1, sp // stack is the pointer
 
-    mov r2, #1 // read one word
+    mov r2, #4 // read one word
     bl read
     // check if we read 4 bytes
-    cmp r0, #1
+    cmp r0, #4
     beq _rand_else
     mov r0, #0
     sub r0, #1  // exit code -1
