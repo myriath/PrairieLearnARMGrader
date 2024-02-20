@@ -215,10 +215,11 @@ class ARMGrader:
         executable,
         port=1000,
         output_filename='run.txt',
+        breakpoint='exit',
     ):
         self.run_command(f"touch {output_filename} && chmod 777 {output_filename}", sandboxed=False)
         self.run_command(
-            f"qemu-arm -g {port} {executable} & gdb-multiarch {executable} -ex 'target remote localhost:{port}' -ex 'b exit' -ex 'c' -ex 'info reg' -ex 'c' -ex 'exit' > {output_filename}",
+            f"qemu-arm -g {port} {executable} & gdb-multiarch {executable} -ex 'target remote localhost:{port}' -ex 'b {breakpoint}' -ex 'c' -ex 'info reg' -ex 'c' -ex 'exit' > {output_filename}",
         )
 
     def test_qemu(
