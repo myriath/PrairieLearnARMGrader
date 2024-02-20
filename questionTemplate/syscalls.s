@@ -20,6 +20,8 @@ open_rand:
     pop {r4-r7, pc}
 
 .global close_rand
+// void close_rand()
+// Closes /dev/urandom and clears RAND_FD
 close_rand:
     push {r4-r7, lr}
     ldr r4, =RAND_FD
@@ -84,6 +86,8 @@ protectoutputs:
     // return new stdout fd
     pop {r0, pc} // pop new stdout from stack and return
 
+// ------------ BEGIN SYSCALL FUNCTIONS ----------- //
+
 .global dup
 // int dup(int fd)
 dup:
@@ -99,8 +103,6 @@ dup:
     svc #0
     // return new fd
     pop {r4-r7, pc}
-
-// ------------ BEGIN SYSCALL FUNCTIONS ----------- //
 
 .global dup2
 // int dup2(int oldFd, int newFd)

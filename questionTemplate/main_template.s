@@ -7,8 +7,22 @@ STDOUT: .word 0     // holds file descriptor for stdout
 // -------------- END TESTING VARS -------------- //
 
 .section .text
-.global _start
 
+// Available functions:
+// void open_rand()                                     Opens /dev/urandom. Must be called before any rand() calls
+// void close_rand()                                    Closes /dev/urandom. Must be called before the program exits
+// int  rand()                                          Generate a random byte and return it as r0
+// int  protectoutputs()                                Protects stdout and stderr from student use. Should be called at the start of the program. Returns the new stdout file descriptor in r0
+// 
+// int  dup(int fd)                                     Performs a syscall to duplicate the given file descriptor. Returns the new file descriptor in r0
+// int  dup2(int oldFd, int newFd)                      Performs a syscall to move the old file descriptor into the new file descriptor. Returns error codes in r0
+// int  open(char *filename, int flags, mode_t mode)    Performs a syscall to open the given file path with the given file flags and mode. Read ubuntu manual for valid flags and modes
+// int  close(int fd)                                   Performs a syscall to close the given file descriptor. Returns error codes in r0
+// void write(int fd, byte buf[count], int count)       Performs a syscall to write [count] bytes from buf to the given file descriptor.
+// void read(int fd, byte buf[count], int count)        Performs a syscall to read [count] bytes from the file descriptor into buf.
+// void exit(int code)                                  Calls close_rand() then exits the program with the given exit code.
+
+.global _start
 _start:
     // always call these!
     bl open_rand        // open /dev/urandom and store the fd for rand() calls
