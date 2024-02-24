@@ -1,0 +1,18 @@
+{
+    "uuid": "7a0eb4b7-bf79-406d-8a10-75d63098eff9",
+    "title": "Bare-Metal Test",
+    "topic": "Assembly",
+    "tags": [
+        "wmhudson",
+        "fa23"
+    ],
+    "type": "v3",
+    "singleVariant": false,
+    "gradingMethod": "External",
+    "externalGradingOptions": {
+        "enabled": true,
+        "image": "prairielearn/armgrader:v1.2",
+        "timeout": 100,
+        "entrypoint": "python3 /grade/tests/tests.py"
+    }
+}

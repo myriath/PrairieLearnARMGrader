@@ -1,1 +1,0 @@
-startup / linker script - https://github.com/varun-venkatesh/bare-metal-arm/blob/master/src/chapter1/
