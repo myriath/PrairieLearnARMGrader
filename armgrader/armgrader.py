@@ -216,7 +216,7 @@ class ARMGrader:
         main_file="/grade/tests/main.c",
         generate_rand=256,
         variables=None,
-        answers=None,
+        functions=None,
     ):
         header = []
         header += [f"#define RAND_SIZE {generate_rand}"]
@@ -238,7 +238,7 @@ class ARMGrader:
             if type(adr) is int:
                 adr = "0x%0.8X" % ((adr<<2)+0x2000f000)
             header += [f"#define {var} (*((volatile unsigned int *) {adr}))"]
-        header += answers
+        header += functions
         header += [""]
         header = "\n".join(header)
 
