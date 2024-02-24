@@ -4,8 +4,9 @@ LABEL maintainer="wmhudson@iastate.edu"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+RUN apt-get upgrade -y
 RUN apt-get update
-RUN apt-get install -y python3.10 python3-pip make qemu-user qemu-system-arm gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg gdb-multiarch
+RUN apt-get install -y python3.10 python3-pip make qemu-user qemu-system-arm gcc-arm-none-eabi gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf binutils-arm-linux-gnueabihf-dbg gdb-multiarch --fix-missing
 
 RUN ln -sf /usr/bin/python3.10 /usr/bin/python3
 
