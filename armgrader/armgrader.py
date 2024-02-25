@@ -215,39 +215,35 @@ class ARMGrader:
         self,
         main_file="/grade/tests/main.c",
         generate_rand=256,
-        variables=None,
+        memory_map={},
         functions=None,
     ):
-        header = []
-        header += [f"#define RAND_SIZE {generate_rand}"]
-        rand_array = [random.randint(0, 65535) for _ in range(generate_rand)]
-        header += [f"int RAND_ARRAY[RAND_SIZE] = {{{','.join(map(str,rand_array))}}};"]
-        mem_map = [None] * 1023
-        for var in variables:
-            adr = variables[var]
-            if adr is None:
-                adr = random.randint(0, 1022)
-                orig = adr
-                while mem_map[adr] is not None:
-                    adr += 1
-                    if adr > 1022:
-                        adr = 0
-                    if adr == orig:
-                        raise RuntimeError("Ran out of variable space!")
-                mem_map[adr] = var
-            if type(adr) is int:
-                adr = "0x%0.8X" % ((adr<<2)+0x2000f000)
-            header += [f"#define {var} (*((volatile unsigned int *) {adr}))"]
-        header += functions
-        header += [""]
-        header = "\n".join(header)
-
         with open(main_file, 'r') as f:
-            text = f.readlines()
-        text.insert(text.index('#include "lm3s6965_headers/LM3S6965.h"\n')+1, header)
+            main = f.readlines()
+
+        if generate_rand is not None:
+            rand_array = [random.randint(0, 65535) for _ in range(generate_rand)]
+            main[main.index('#define RAND_SIZE 1\n')] = f'#define RAND_SIZE {generate_rand}\n'
+            main[main.index('int RAND_ARRAY[RAND_SIZE];\n')] = f'int RAND_ARRAY[RAND_SIZE] = {{{",".join(map(str,rand_array))}}};\n'
+        if functions is not None:
+            main.insert(main.index('// functions inserted here\n')+1, '\n'.join(functions))
+        
+        print(memory_map)
+        for base in memory_map:
+            var = memory_map[base]
+            if var is None: continue
+            adr = 0x2000_0000 | int(base)
+
+            name = var['name']
+            _type = var['type']
+            print(name)
+            print(_type)
+            print(f'#define {name} *((int *) 0)')
+
+            main[main.index(f'#define {name} *((int *) 0)\n')] = f'#define {name} (*((volatile {_type} *) {adr}))\n'
 
         with open(main_file, 'w') as f:
-            f.write("\n".join(text))
+            f.write("\n".join(main))
 
     def make(
         self,
