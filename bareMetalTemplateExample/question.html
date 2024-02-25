@@ -1,0 +1,24 @@
+<pl-question-panel>
+    <h1>Test Arithmetic Question</h1>
+
+    <p>Perform a = b + {{params.add_amnt}}; given the following assumptions:</p>
+    <pl-code>
+int a; // located at {{params.a_adr}}
+int b; // located at {{params.b_adr}}
+    </pl-code>
+</pl-question-panel>
+
+<pl-file-editor
+    file-name="student.s"
+    ace-mode="ace/mode/assembly_arm32"
+>
+.global _arithmetic
+_arithmetic:                              // Start of the function
+    // TODO: your code here
+    bx lr                                 // Returns from the function
+</pl-file-editor>
+
+<pl-submission-panel>
+    <pl-external-grader-results></pl-external-grader-results>
+    <pl-file-preview></pl-file-preview>
+</pl-submission-panel>

@@ -6,6 +6,7 @@ import pathlib
 import re
 import shlex
 import subprocess
+import random
 
 CODEBASE = "/grade/student"
 DATAFILE = "/grade/data/data.json"
@@ -209,6 +210,100 @@ class ARMGrader:
         parent = os.path.dirname(file)
         if change_parent and parent and not os.path.samefile(file, parent):
             self.change_mode(parent, "711")
+
+    def generateHeaders(
+        self,
+        main_file="/grade/tests/main.c",
+        generate_rand=256,
+        variables=None,
+        functions=None,
+    ):
+        header = []
+        header += [f"#define RAND_SIZE {generate_rand}"]
+        rand_array = [random.randint(0, 65535) for _ in range(generate_rand)]
+        header += [f"int RAND_ARRAY[RAND_SIZE] = {{{','.join(map(str,rand_array))}}};"]
+        mem_map = [None] * 1023
+        for var in variables:
+            adr = variables[var]
+            if adr is None:
+                adr = random.randint(0, 1022)
+                orig = adr
+                while mem_map[adr] is not None:
+                    adr += 1
+                    if adr > 1022:
+                        adr = 0
+                    if adr == orig:
+                        raise RuntimeError("Ran out of variable space!")
+                mem_map[adr] = var
+            if type(adr) is int:
+                adr = "0x%0.8X" % ((adr<<2)+0x2000f000)
+            header += [f"#define {var} (*((volatile unsigned int *) {adr}))"]
+        header += functions
+        header += [""]
+        header = "\n".join(header)
+
+        with open(main_file, 'r') as f:
+            text = f.readlines()
+        text.insert(text.index('#include "lm3s6965_headers/LM3S6965.h"\n')+1, header)
+
+        with open(main_file, 'w') as f:
+            f.write("\n".join(text))
+
+    def make(
+        self,
+        student_file="student.s",
+    ):
+        self.run_command(f"cp {student_file} /grade/tests/{student_file}", sandboxed=False)
+        self.result['message'] = 'Compilation:\n' + self.run_command("make -C /grade/tests system.bin", sandboxed=False)
+
+    def test_make_run(
+        self,
+        input=None,
+        exp_output=None,
+        must_match_all_outputs=False,  # True, False or 'partial'
+        reject_output=None,
+        field=None,
+        ignore_case=True,
+        timeout=1,
+        size_limit=10240,
+        ignore_consec_spaces=True,
+        args=None,
+        name=None,
+        msg=None,
+        max_points=1,
+        highlight_matches=False, 
+    ):  
+        self.change_mode("/grade/tests/system.bin", "555")
+        return self.test_run(
+            "qemu-system-arm -M lm3s6965evb -semihosting -nographic -kernel /grade/tests/system.bin",
+            input=input,
+            exp_output=exp_output,
+            must_match_all_outputs=must_match_all_outputs,
+            reject_output=reject_output,
+            field=field,
+            ignore_case=ignore_case,
+            timeout=timeout,
+            size_limit=size_limit,
+            ignore_consec_spaces=ignore_consec_spaces,
+            args=args,
+            name=name,
+            msg=msg,
+            max_points=max_points,
+            highlight_matches=highlight_matches
+        )
+
+
+    def dump_registers(
+        self,
+        executable,
+        port=1000,
+        output_filename='run.txt',
+        breakpoint='exit',
+    ):
+        self.run_command(f"touch {output_filename} && chmod 777 {output_filename}", sandboxed=False)
+        self.run_command(
+            f"qemu-arm -g {port} {executable} & gdb-multiarch {executable} -ex 'target remote localhost:{port}' -ex 'b {breakpoint}' -ex 'c' -ex 'info reg' -ex 'c' -ex 'exit' > {output_filename}",
+        )
 
     def test_qemu(
         self,
