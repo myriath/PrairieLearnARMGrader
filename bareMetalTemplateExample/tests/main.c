@@ -47,25 +47,5 @@ void c_entry() {
         print_uart0("a=%d b=%d\n", a, b);
     }
 
-    // test with 100 random values
-    // for (int i = 0; i < 100; i++) {
-    //     // rand() gets a random value from the RAND_ARRAY generated in tests.py
-    //     int t = rand();
-    //     a = t;
-    //     ans_a = t;
-    //     t = rand();
-    //     b = t;
-    //     ans_b = t;
-    //     // use generated values and execute both answer and test functions
-    //     ans_arithmetic();
-    //     _arithmetic();
-    //     // test for correctness
-    //     if (a != ans_a || b != ans_b) {
-    //         print_uart0("Fail!\n");
-    //         goto _exit;
-    //     }
-    // }
-    // print_uart0("Success!\n");
-    // _exit:
     _exit_qemu();   // exits QEMU cleanly
 }
