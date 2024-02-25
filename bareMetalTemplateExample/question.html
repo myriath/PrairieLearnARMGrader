@@ -1,24 +1,34 @@
 <pl-question-panel>
-    <h1>Test Arithmetic Question</h1>
+  <h1>Arithmetic Practice</h1>
+  <p>
+    Given the following declarations, write the assembly code to implement each functionality.
+  </p>
+  <pl-code
+  language="c"
+  prevent-select="true"
+  >
+// Variable declaration assumptions
+unsigned int a;         // Defined at {{params.a_adr}}
+unsigned int b;         // Defined at {{params.b_adr}}
+  </pl-code>
 
-    <p>Perform a = b + {{params.add_amnt}}; given the following assumptions:</p>
-    <pl-code>
-int a; // located at {{params.a_adr}}
-int b; // located at {{params.b_adr}}
-    </pl-code>
-</pl-question-panel>
+  <p>
+    For this function: perform a = b + {{params.add_amnt}}
+  </p>
 
-<pl-file-editor
+  <pl-file-editor
     file-name="student.s"
     ace-mode="ace/mode/assembly_arm32"
->
+  >
 .global _arithmetic
 _arithmetic:                              // Start of the function
-    // TODO: your code here
+    // TODO
     bx lr                                 // Returns from the function
-</pl-file-editor>
+
+  </pl-file-editor>
+</pl-question-panel>
 
 <pl-submission-panel>
-    <pl-external-grader-results></pl-external-grader-results>
-    <pl-file-preview></pl-file-preview>
+  <pl-external-grader-results></pl-external-grader-results>
+  <pl-file-preview></pl-file-preview>
 </pl-submission-panel>
