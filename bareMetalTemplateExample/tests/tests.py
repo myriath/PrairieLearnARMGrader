@@ -10,8 +10,6 @@ class TestGrader(armgrader.ARMGrader):
             memory_map=self.data['params']['memoryMap']
         )
         
-        print(self.run_command("cat /grade/tests/main.c", sandboxed=False))
-
         # compiles the program. student_file is the name of the student's code file, it gets copied to /grade/tests for compilation
         self.make(student_file="student.s")
         # runs the program and tests against exp_output. you can use the same arguments as any other test_run call.

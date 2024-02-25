@@ -228,17 +228,13 @@ class ARMGrader:
         if functions is not None:
             main.insert(main.index('// functions inserted here\n')+1, '\n'.join(functions))
         
-        print(memory_map)
         for base in memory_map:
             var = memory_map[base]
             if var is None: continue
-            adr = 0x2000_0000 | int(base)
+            adr = 0x2000_0000 | (int(base)<<2)
 
             name = var['name']
             _type = var['type']
-            print(name)
-            print(_type)
-            print(f'#define {name} *((int *) 0)')
 
             main[main.index(f'#define {name} *((int *) 0)\n')] = f'#define {name} (*((volatile {_type} *) {adr}))\n'
 
