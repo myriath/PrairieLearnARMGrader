@@ -244,9 +244,41 @@ class ARMGrader:
     def make(
         self,
         student_file="student.s",
+        show_compilation=True,
+        debug=False,
     ):
         self.run_command(f"cp {student_file} /grade/tests/{student_file}", sandboxed=False)
-        self.result['message'] = 'Compilation:\n' + self.run_command("make -C /grade/tests system.bin", sandboxed=False)
+        out = self.run_command(f"make -C /grade/tests {'system.g.bin' if debug else 'system.bin'}", sandboxed=False)
+        success = (
+            os.path.isfile("/grade/tests/system.g.bin") if debug
+            else os.path.isfile("/grade/tests/system.bin")
+        )
+        if not success:
+            self.result['message'] = f'Compilation Errors!\n\n{out}'
+            raise UngradableException()
+        if show_compilation:
+            self.result['message'] = f'Compilation:\n\n{out}'
+        return out
+
+    def test_make(
+        self,
+        student_file="student.s",
+        points=1,
+        name="Compilation",
+        field=None,
+    ):
+        out = self.make(student_file=student_file)
+        success = (
+            os.path.isfile("/grade/tests/system.bin") and
+            os.path.isfile("/grade/tests/system.g.bin")
+        )
+        return self.add_test_result(
+            name,
+            out=out,
+            points=points if success else 0,
+            max_points=points,
+            field=field,
+        )
 
     def test_make_run(
         self,
