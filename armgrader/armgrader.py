@@ -226,7 +226,7 @@ class ARMGrader:
             main[main.index('#define RAND_SIZE 1\n')] = f'#define RAND_SIZE {generate_rand}\n'
             main[main.index('int RAND_ARRAY[RAND_SIZE];\n')] = f'int RAND_ARRAY[RAND_SIZE] = {{{",".join(map(str,rand_array))}}};\n'
         if functions is not None:
-            main.insert(main.index('// functions inserted here\n')+1, '\n'.join(functions))
+            main.insert(main.index('// functions inserted here\n')+1, ''.join(functions))
         
         for base in memory_map:
             var = memory_map[base]

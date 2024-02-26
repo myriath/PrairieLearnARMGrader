@@ -61,6 +61,7 @@ void print_uart0(const char *format, ...) {
             set_uart0(format[i]);
         }
     }
+    va_end(va);
 }
 
 void scan_uart0(const char *format, ...) {
@@ -96,4 +97,5 @@ void scan_uart0(const char *format, ...) {
             }
         }
     }
+    va_end(va);
 }
