@@ -16,11 +16,11 @@ class TestGrader(armgrader.ARMGrader):
         input = []
         exp_output = []
         add_amnt = self.data['params']['add_amnt']
-        for _ in range(5):
+        for i in range(5):
             a = random.randint(0, 255)
             b = random.randint(0, 255)
             ans_a = b+add_amnt
-            exp_output.append(f"a={ans_a} b={b}\n")
+            exp_output.append(f"{i}: a={ans_a} b={b}\n")
             input.append(f'{a} {b}')
         self.test_make_run(input="\n".join(input), exp_output=exp_output, highlight_matches=True)
     

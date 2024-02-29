@@ -51,7 +51,7 @@ void c_entry() {
     // for (int i = 0; i < NUM_INPUTS; i++) {
     //     a = as[i];                       
     //     _arithmetic();                   // Student function is _arithmetic()
-    //     print_uart0("a=%d\n", a, b);     // Print output
+    //     print_uart0("%d: a=%d\n", i, a, b);     // Print output
     // }
 
     _exit_qemu();   // exits QEMU cleanly

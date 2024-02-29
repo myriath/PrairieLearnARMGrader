@@ -44,7 +44,7 @@ void c_entry() {
         a = as[i];
         b = bs[i];
         _arithmetic();
-        print_uart0("a=%d b=%d\n", a, b);
+        print_uart0("%d: a=%d b=%d\n", i, a, b);
     }
 
     _exit_qemu();   // exits QEMU cleanly

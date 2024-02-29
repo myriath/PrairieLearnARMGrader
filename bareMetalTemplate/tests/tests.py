@@ -17,12 +17,12 @@ class TestGrader(armgrader.ARMGrader):
         # runs the program and tests against exp_output. you can use the same arguments as any other test_run call.
         input = []
         exp_output = []
-        for _ in range(NUM_INPUTS):
+        for i in range(NUM_INPUTS):
             # ----------- CREATE INPUTS AND EXPECTED OUTPUTS ----------- #
             # Example:
             # a = random.randint(0, 255)
             # ans_a = self.data['params']['add_amnt']
-            # exp_output.append(f"a={ans_a}\n")
+            # exp_output.append(f"{i}: a={ans_a}\n")
             # input.append(f'{a}')
 
             
